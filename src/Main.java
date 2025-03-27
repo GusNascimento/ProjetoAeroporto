@@ -191,4 +191,35 @@ public class Main {
 
     private static void FazerReserva() {
     }
+
+
+
+    private static String mostraMatrix (int voo){
+        Passageiro [][] matriz = voos.get(voo).aviao.lugares;
+        String aux = "";
+        for (Passageiro[] p1 : matriz){
+            for(Passageiro p2 : p1){
+                if (p2 == null){
+                    aux += "[_]";
+                } else {
+                    aux += "[" + p2.nome + "]";
+                }
+                aux = "\n";
+            }
+        }
+        return aux;
+    }
+
+    public static int qntDisponivel (Voo voo){
+        Passageiro [][] pass = voo.aviao.lugares;
+        int count = 0;
+        for (Passageiro[] p1 : pass) {
+            for (Passageiro p2 : p1) {
+                if (p2 == null){
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
 }
