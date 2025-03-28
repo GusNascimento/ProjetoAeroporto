@@ -190,10 +190,17 @@ public class Main {
     }
 
     private static void FazerReserva() {
+
     }
 
-
-
+    public static boolean VerificaLugar(Voo voo, int fila, int cadeira) {
+        try {
+            Passageiro verif = voo.aviao.lugares[fila - 1][cadeira - 1];
+            return verif != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
     private static String mostraMatrix (int voo){
         Passageiro [][] matriz = voos.get(voo).aviao.lugares;
         String aux = "";
