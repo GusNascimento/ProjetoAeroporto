@@ -77,7 +77,7 @@ public class Main {
             }
         } while (aux != 3);
     }
-
+    // cadastra o avião
     private static void CadastrarAviao() {
         boolean isItDone = false;
         boolean isFileira = false;
@@ -117,7 +117,7 @@ public class Main {
     private static void CadastrarVoo() {
         String tempVoo = "";
         String data, horario, aux;
-        Boolean isItDone = false;
+        boolean isItDone = false;
         int aviao = 0;
 
         for (int i = 0; i < aeronaves.size(); i++) {
@@ -189,7 +189,89 @@ public class Main {
     private static void ConsultarLugaresVazios() {
     }
 
+    // passageiro -> mostrar avião -> selecionar voo -> verificar disponbilidade
+    // - > verificar quantidade e montar
     private static void FazerReserva() {
+       String temp = "";
+       String temp2 = "";
+       String listaVoo = "";
+       String nome = "";
+        String cpf = "";
+        int voo = 0;
+        int assento = 0;
+        int fileira = 0;
+
+       nome = JOptionPane.showInputDialog("Digite o nome: ");
+       cpf = JOptionPane.showInputDialog("Digite o cpf: ");
+
+       Passageiro pass = new Passageiro(nome, cpf);
+
+
+
+        for (int i = 0; i < voos.size(); i++) {
+            listaVoo += "\n" + (i + 1) + " - [" + voos.get(i).aviao.getModelo() + " | " + voos.get(i).horario + " - "
+                    + voos.get(i).data + "]";
+        }
+
+        boolean isItDone = false;
+
+        do {
+
+            try{
+                temp2 = JOptionPane.showInputDialog("Digite o número do voo \n" + listaVoo);
+                voo = Integer.parseInt(temp2);
+                isItDone = true;
+            }catch (Exception e){
+                JOptionPane.showMessageDialog(null, "Insira um número!");
+            }
+        } while (!isItDone);
+
+        int quantidadeLivre = qntDisponivel(voos.get(voo-1));
+
+        if (quantidadeLivre > 0){
+          boolean verify = false;
+          do{
+
+            do {
+                try{
+                 temp = JOptionPane.showInputDialog("Selecione o assento");
+                  assento = Integer.parseInt(temp);
+                 verify = true;
+                } catch (Exception e) {JOptionPane.showMessageDialog(null, "Insira um número!");
+                }
+            } while(!verify);
+
+            do {
+                try{
+                    temp2 = JOptionPane.showInputDialog("Selecione a fileira");
+                    fileira = Integer.parseInt(temp2);
+                    verify = false;
+                } catch (Exception e) {JOptionPane.showMessageDialog(null, "Insira um número!");
+                }
+            } while(verify);
+
+            verify = VerificaLugar(voos.get(voo-1), fileira, assento);
+
+            if (verify){
+                JOptionPane.showMessageDialog(null, "Lugar Ocupado!");
+            } else {
+                try{
+                    voos.get(voo).aviao.lugares[assento][fileira] = pass;
+                    JOptionPane.showMessageDialog(null,
+                            "Passageiro " + pass.nome + " adicionado com sucesso ao Voo");
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Escolha de Fila/Cadeira Inválida" + "\n Fila " + fileira
+                            + " & Cadeira " +assento+ "\nnão correspondem a um assento existente no Avião");
+                    verify = true;
+                }
+            }
+
+          } while (verify);
+
+        } else{
+            JOptionPane.showMessageDialog(null, "Não há lugares disponíveis nesse voo");
+        }
+
 
     }
 
