@@ -43,8 +43,6 @@ public class Main {
 
     }
 
-   
-
     private static void CadastrarSistema() {
         String temp = "";
         int aux;
@@ -77,41 +75,47 @@ public class Main {
             }
         } while (aux != 3);
     }
-    // cadastra o avião
+
     private static void CadastrarAviao() {
-        boolean isItDone = false;
-        boolean isFileira = false;
-        String modelo = "";
-        int cadeira = 0;
-        int fileira = 0;
-
-        modelo = JOptionPane.showInputDialog("Cadastrar um Avião:" + "\n Insira o Modelo");
-        do {
-            try{
-                String auxCad1 = JOptionPane.showInputDialog("Insira o número de cadeiras neste avião" +
-                        "\n  (Prefira números pequenos)");
-                cadeira = Integer.parseInt(auxCad1);
-                isItDone = true;
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Insira um número!");
-            }
-        } while (!isItDone);
+        String modelo = JOptionPane.showInputDialog("Cadastro do Avião:\nInsira o Modelo");
+        if(modelo == null || modelo.isEmpty()){
+            return;
+        }
+        int fileira = 0, cadeira = 0;
+        int loop = 0;
+        int loop2 = 0;
 
         do {
-            try{
-                String auxCad1 = JOptionPane.showInputDialog("Insira o número de fileiras neste avião" +
-                        "\n  (Prefira números pequenos)");
-                fileira = Integer.parseInt(auxCad1);
-                isFileira = true;
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Insira um número!");
+            try {
+                fileira = Integer.parseInt(JOptionPane.showInputDialog("Número de fileiras no avião"));
+                if (fileira <= 0) {
+                    break;
+                }
+                loop = 1;
+            }catch (Exception e){
+                JOptionPane.showMessageDialog(null, "Digite um número válido!");
             }
-        } while (!isFileira);
+        } while (loop != 1);
 
-        Aviao aviao = new Aviao(modelo, cadeira, fileira);
+        do {
+            try{
+                cadeira = Integer.parseInt(JOptionPane.showInputDialog("Número de fileiras no avião"));
+                if (cadeira <= 0) {
+                    break;
+                }
+                loop2 = 1;
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Digite um número válido!");
+            }
+        } while (loop2 != 1);
+
+        Aviao aviao = new Aviao(modelo, fileira, cadeira);
         aeronaves.add(aviao);
 
-        JOptionPane.showMessageDialog(null, "Aeronave '" + aviao.getModelo() + " " + aeronaves.size() +"' cadastrada com sucesso!");
+        JOptionPane.showMessageDialog(null,
+                "Aeronave '" + modelo + "' cadastrada com sucesso!\n" +
+                        "Capacidade: " + (fileira * cadeira) + " passageiros\n" +
+                        aeronaves.size() + " na lista.");
     }
 
     private static void CadastrarVoo() {
@@ -141,9 +145,6 @@ public class Main {
 
         voos.add(voo);
     }
-
-
-
 
     private static void ReservaPassagem() {
         int menu = 0;
@@ -182,133 +183,139 @@ public class Main {
             }
         } while (menu != 4);
     }
-
-    private static void ConsultaLugaresReservados() {
-    }
-
-    private static void ConsultarLugaresVazios() {
-    }
-
-    // passageiro -> mostrar avião -> selecionar voo -> verificar disponbilidade
-    // - > verificar quantidade e montar
     private static void FazerReserva() {
-       String temp = "";
-       String temp2 = "";
-       String listaVoo = "";
-       String nome = "";
+        String nome = "";
         String cpf = "";
-        int voo = 0;
-        int assento = 0;
-        int fileira = 0;
-
-       nome = JOptionPane.showInputDialog("Digite o nome: ");
-       cpf = JOptionPane.showInputDialog("Digite o cpf: ");
-
-       Passageiro pass = new Passageiro(nome, cpf);
-
-
-
-        for (int i = 0; i < voos.size(); i++) {
-            listaVoo += "\n" + (i + 1) + " - [" + voos.get(i).aviao.getModelo() + " | " + voos.get(i).horario + " - "
-                    + voos.get(i).data + "]";
+        if (voos.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Não há voos disponíveis!");
         }
 
-        boolean isItDone = false;
+        int selecVoo = 0, selecCpf = 0;
 
         do {
-
-            try{
-                temp2 = JOptionPane.showInputDialog("Digite o número do voo \n" + listaVoo);
-                voo = Integer.parseInt(temp2);
-                isItDone = true;
-            }catch (Exception e){
-                JOptionPane.showMessageDialog(null, "Insira um número!");
+            try {
+                nome = JOptionPane.showInputDialog("Digite o nome do passageiro:");
+                selecVoo = 1;
+            } catch (Exception e){
+                JOptionPane.showMessageDialog(null, "Insira um nome válido");
             }
-        } while (!isItDone);
+        } while(selecVoo != 1);
 
-        int quantidadeLivre = qntDisponivel(voos.get(voo-1));
 
-        if (quantidadeLivre > 0){
-          boolean verify = false;
-          do{
-
-            do {
-                try{
-                 temp = JOptionPane.showInputDialog("Selecione o assento");
-                  assento = Integer.parseInt(temp);
-                 verify = true;
-                } catch (Exception e) {JOptionPane.showMessageDialog(null, "Insira um número!");
-                }
-            } while(!verify);
-
-            do {
-                try{
-                    temp2 = JOptionPane.showInputDialog("Selecione a fileira");
-                    fileira = Integer.parseInt(temp2);
-                    verify = false;
-                } catch (Exception e) {JOptionPane.showMessageDialog(null, "Insira um número!");
-                }
-            } while(verify);
-
-            verify = VerificaLugar(voos.get(voo-1), fileira, assento);
-
-            if (verify){
-                JOptionPane.showMessageDialog(null, "Lugar Ocupado!");
-            } else {
-                try{
-                    voos.get(voo).aviao.lugares[assento][fileira] = pass;
-                    JOptionPane.showMessageDialog(null,
-                            "Passageiro " + pass.nome + " adicionado com sucesso ao Voo");
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, "Escolha de Fila/Cadeira Inválida" + "\n Fila " + fileira
-                            + " & Cadeira " +assento+ "\nnão correspondem a um assento existente no Avião");
-                    verify = true;
-                }
+        do {
+            try {
+                cpf = JOptionPane.showInputDialog("Digite o CPF do passageiro:");
+                selecCpf = 1;
+            } catch (Exception e){
+                JOptionPane.showMessageDialog(null, "Insira um nome válido");
             }
+        } while(selecCpf != 1);
 
-          } while (verify);
+        Passageiro pass = new Passageiro(nome, cpf);
 
-        } else{
-            JOptionPane.showMessageDialog(null, "Não há lugares disponíveis nesse voo");
+        StringBuilder listaVoos = new StringBuilder();
+        for (int i = 0; i < voos.size(); i++) {
+            Voo v = voos.get(i);
+            listaVoos.append("\n").append(i+1).append(" - Voo ").append(v.nro)
+                    .append(" (").append(v.data).append(" ").append(v.horario).append(")");
         }
 
 
-    }
+        Voo vooCad = null;
 
+        while (vooCad == null) {
+            try {
+                String input = JOptionPane.showInputDialog("Selecione o avião" + listaVoos);
+                int selectInput = Integer.parseInt(input) - 1;
+                vooCad = voos.get(selectInput);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Seleção inválida!");
+            }
+        }
+
+        int cont = 0;
+        while (cont == 0) {
+            try {
+                String exib = mostraMatrix(voos.indexOf(vooCad));
+                int row = Integer.parseInt(JOptionPane.showInputDialog(exib +
+                        "\n Digite a fileira desejada ( 1 -" + vooCad.aviao.lugares.length + "):"));
+                int seat = Integer.parseInt(JOptionPane.showInputDialog(exib +
+                        "\n Digite o assento desejado ( 1 -" + vooCad.aviao.lugares[0].length + "):"));
+                if (row < 1 || row > vooCad.aviao.lugares[0].length || seat < 1 || seat > vooCad.aviao.lugares[0].length){
+                    throw new Exception("Fora dos limites");
+                }
+
+                if (vooCad.aviao.lugares[row-1][seat-1] == null) {
+                    vooCad.aviao.lugares[row-1][seat-1] = pass;
+                    JOptionPane.showMessageDialog(null,
+                            "Reserva confirmada para " + nome +
+                                    "\nVoo: " + vooCad.nro +
+                                    "\nAssento: " + row + "-" + seat);
+                    cont = 1;
+                } else{
+                    JOptionPane.showMessageDialog(null, "Assento já ocupado! Selecione outro.");
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null,
+                        "Valores inválidos!\n" +
+                                "Fileira deve ser 1-" + vooCad.aviao.lugares.length + "\n" +
+                                "Assento deve ser 1-" + vooCad.aviao.lugares[0].length);
+            }
+        }
+    }
+    private static void ConsultaLugaresReservados() {
+        if (voos.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Não há voos disponíveis!");
+        }
+
+        StringBuilder listaConsultaVoos = new StringBuilder();
+        for (int i = 0; i < voos.size(); i++) {
+            Voo v = voos.get(i);
+            listaConsultaVoos.append("\n").append(i+1).append(" - Voo ").append(v.nro)
+                    .append(" (").append(v.data).append(" ").append(v.horario).append(")");
+        }
+        Voo consultaVoo = null;
+
+        while (consultaVoo == null) {
+            try {
+                String input = JOptionPane.showInputDialog("Selecione o avião" + listaConsultaVoos);
+                int selectInput = Integer.parseInt(input) - 1;
+                consultaVoo = voos.get(selectInput);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Seleção inválida!");
+            }
+        }
+
+    }
+    private static void ConsultarLugaresVazios() {
+    }
     public static boolean VerificaLugar(Voo voo, int fila, int cadeira) {
         try {
-            Passageiro verif = voo.aviao.lugares[fila - 1][cadeira - 1];
-            return verif != null;
-        } catch (Exception e) {
-            return false;
+            return voo.aviao.lugares[fila-1][cadeira-1] != null;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return true; // Considera como ocupado se for inválido
         }
     }
-    private static String mostraMatrix (int voo){
-        Passageiro [][] matriz = voos.get(voo).aviao.lugares;
-        String aux = "";
-        for (Passageiro[] p1 : matriz){
-            for(Passageiro p2 : p1){
-                if (p2 == null){
-                    aux += "[_]";
-                } else {
-                    aux += "[" + p2.nome + "]";
-                }
-                aux = "\n";
-            }
-        }
-        return aux;
-    }
+    private static String mostraMatrix (int vooIndex){
+        Passageiro[][] lugares = voos.get(vooIndex).aviao.lugares;
+        StringBuilder sb = new StringBuilder("\nMapa de Ocupação:\n");
 
-    public static int qntDisponivel (Voo voo){
-        Passageiro [][] pass = voo.aviao.lugares;
-        int count = 0;
-        for (Passageiro[] p1 : pass) {
-            for (Passageiro p2 : p1) {
-                if (p2 == null){
-                    count++;
-                }
-            }
+        sb.append("     ");
+        for (int j = 0; j < lugares[0].length; j++) {
+            sb.append(String.format("%2d ", j+1));
         }
-        return count;
+        sb.append("\n");
+
+        for (int i = 0; i < lugares.length; i++) {
+            sb.append(String.format("F%02d ", i+1));
+            for (int j = 0; j < lugares[i].length; j++) {
+                sb.append(lugares[i][j] == null ? "[_]" : "[X]").append(" ");
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 }
+
