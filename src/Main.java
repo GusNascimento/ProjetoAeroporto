@@ -5,15 +5,17 @@ public class Main {
     static ArrayList<Voo> voos = new ArrayList<Voo>();
     static ArrayList<Aviao> aeronaves = new ArrayList<Aviao>();
 
-
-
     public static void main(String[] args) {
         String temp = "";
         int menu;
         do {
             try{
-               temp = JOptionPane.showInputDialog("Bem vindo ao Gerenciador de Voos!" + "\n 1 - Parâmetros do Sistema"
-                        + "\n 2 - Reserva de Passagens" + "\n 3 - Sair");
+               temp = JOptionPane.showInputDialog("""
+                       Bem vindo ao Gerenciador de Voos!
+                        1 - Parâmetros do Sistema\
+                       
+                        2 - Reserva de Passagens
+                        3 - Sair""");
 
                 menu = Integer.parseInt(temp);
             } catch (Exception e) {
@@ -42,15 +44,18 @@ public class Main {
 
 
     }
-
     private static void CadastrarSistema() {
         String temp = "";
         int aux;
 
         do {
             try {
-                temp = JOptionPane.showInputDialog("Parâmetros do Sistema" + "\n 1 - Cadastrar Aeronave" +
-                        "\n 2 - Cadastrar Voo" + "\n 3 - Voltar");
+                temp = JOptionPane.showInputDialog("""
+                        Parâmetros do Sistema
+                         1 - Cadastrar Aeronave\
+                        
+                         2 - Cadastrar Voo
+                         3 - Voltar""");
                 aux = Integer.parseInt(temp);
             } catch (Exception e) {
                 if (temp == null){
@@ -75,7 +80,6 @@ public class Main {
             }
         } while (aux != 3);
     }
-
     private static void CadastrarAviao() {
         String modelo = JOptionPane.showInputDialog("Cadastro do Avião:\nInsira o Modelo");
         if(modelo == null || modelo.isEmpty()){
@@ -117,7 +121,6 @@ public class Main {
                         "Capacidade: " + (fileira * cadeira) + " passageiros\n" +
                         aeronaves.size() + " na lista.");
     }
-
     private static void CadastrarVoo() {
         String tempVoo = "";
         String data, horario, aux;
@@ -145,7 +148,6 @@ public class Main {
 
         voos.add(voo);
     }
-
     private static void ReservaPassagem() {
         int menu = 0;
 
@@ -153,8 +155,13 @@ public class Main {
             String temp = "";
 
             try {
-                temp = JOptionPane.showInputDialog("Bem vindo ao Gerenciador de Voos!" + "\n 1 - Fazer Reserva"
-                        + "\n 2 - Consultar Lugares Vazios" + "\n 3 - Consultar Reservas Realizadas" + "\n 4 - Voltar");
+                temp = JOptionPane.showInputDialog("""
+                        Bem vindo ao Gerenciador de Voos!
+                         1 - Fazer Reserva\
+                        
+                         2 - Consultar Lugares Vazios
+                         3 - Consultar Reservas Realizadas
+                         4 - Voltar""");
                 menu = Integer.parseInt(temp);
 
             } catch (Exception e) {
@@ -170,7 +177,7 @@ public class Main {
                     FazerReserva();
                     break;
                 case 2:
-                    ConsultarLugaresVazios();
+                    RemovePassageiro();
                     break;
                 case 3:
                     ConsultaLugaresReservados();
@@ -282,13 +289,39 @@ public class Main {
                 String input = JOptionPane.showInputDialog("Selecione o avião" + listaConsultaVoos);
                 int selectInput = Integer.parseInt(input) - 1;
                 consultaVoo = voos.get(selectInput);
+                String show = mostraMatrix(consultaVoo.getNro());
+                JOptionPane.showMessageDialog(null, show);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Seleção inválida!");
             }
         }
 
+
     }
-    private static void ConsultarLugaresVazios() {
+    private static void RemovePassageiro() {
+        if (voos.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Não há voos disponíveis!");
+        }
+
+        StringBuilder listaConsulta = new StringBuilder();
+        for (int i = 0; i < voos.size(); i++) {
+            Voo v = voos.get(i);
+            listaConsulta.append("\n").append(i+1).append(" - Voo ").append(v.nro)
+                    .append(" (").append(v.data).append(" ").append(v.horario).append(")");
+        }
+        Voo consultaVoo = null;
+
+        while (consultaVoo == null) {
+            String inputaux = JOptionPane.showInputDialog("Selecione o avião" + listaConsulta);
+            int aux = Integer.parseInt(inputaux) - 1;
+            consultaVoo = voos.get(aux);
+            String showR = mostraMatrix(consultaVoo.getNro());
+            JOptionPane.showMessageDialog(null, showR);
+        }
+
+        /* FAZ O LOOP DO OBJ PASSAGEIRO, VERIFICA SAE É NULL, E MANDA EXIBIR NUMA LISTA, USAR O TOSTRING*/
+
+
     }
     public static boolean VerificaLugar(Voo voo, int fila, int cadeira) {
         try {
