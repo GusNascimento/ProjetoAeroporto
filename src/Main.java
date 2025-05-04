@@ -4,6 +4,7 @@ import javax.swing.*;
 public class Main {
     static ArrayList<Voo> voos = new ArrayList<Voo>();
     static ArrayList<Aviao> aeronaves = new ArrayList<Aviao>();
+    static ArrayList <Passageiro> passageiros = new ArrayList<Passageiro>();
 
     public static void main(String[] args) {
         String temp = "";
@@ -122,13 +123,13 @@ public class Main {
                         aeronaves.size() + " na lista.");
     }
     private static void CadastrarVoo() {
-        String tempVoo = "";
+        StringBuilder tempVoo = new StringBuilder();
         String data, horario, aux;
         boolean isItDone = false;
         int aviao = 0;
 
         for (int i = 0; i < aeronaves.size(); i++) {
-            tempVoo += "\n " + (i + 1) + " - " + aeronaves.get(i).getModelo();
+            tempVoo.append("\n ").append(i + 1).append(" - ").append(aeronaves.get(i).getModelo());
         }
 
         do {
@@ -177,7 +178,7 @@ public class Main {
                     FazerReserva();
                     break;
                 case 2:
-                    RemovePassageiro();
+                    ConsultaReservas();
                     break;
                 case 3:
                     ConsultaLugaresReservados();
@@ -252,13 +253,14 @@ public class Main {
                     throw new Exception("Fora dos limites");
                 }
 
-                if (vooCad.aviao.lugares[row-1][seat-1] == null) {
+                if (VerificaLugar(vooCad,row,seat)) {
                     vooCad.aviao.lugares[row-1][seat-1] = pass;
                     JOptionPane.showMessageDialog(null,
                             "Reserva confirmada para " + nome +
                                     "\nVoo: " + vooCad.nro +
                                     "\nAssento: " + row + "-" + seat);
                     cont = 1;
+                    passageiros.add(pass);
                 } else{
                     JOptionPane.showMessageDialog(null, "Assento já ocupado! Selecione outro.");
                 }
@@ -295,10 +297,10 @@ public class Main {
                 JOptionPane.showMessageDialog(null, "Seleção inválida!");
             }
         }
-
+        
 
     }
-    private static void RemovePassageiro() {
+    private static void ConsultaReservas() {
         if (voos.isEmpty()){
             JOptionPane.showMessageDialog(null, "Não há voos disponíveis!");
         }
@@ -309,23 +311,49 @@ public class Main {
             listaConsulta.append("\n").append(i+1).append(" - Voo ").append(v.nro)
                     .append(" (").append(v.data).append(" ").append(v.horario).append(")");
         }
-        Voo consultaVoo = null;
 
-        while (consultaVoo == null) {
-            String inputaux = JOptionPane.showInputDialog("Selecione o avião" + listaConsulta);
-            int aux = Integer.parseInt(inputaux) - 1;
-            consultaVoo = voos.get(aux);
-            String showR = mostraMatrix(consultaVoo.getNro());
-            JOptionPane.showMessageDialog(null, showR);
+        Voo teste = null;
+
+        while (teste == null) {
+            try {
+                String input = JOptionPane.showInputDialog("Selecione o avião" + listaConsulta);
+                int selectInput = Integer.parseInt(input) - 1;
+                teste = voos.get(selectInput);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Seleção inválida!");
+            }
         }
 
-        /* FAZ O LOOP DO OBJ PASSAGEIRO, VERIFICA SAE É NULL, E MANDA EXIBIR NUMA LISTA, USAR O TOSTRING*/
+        boolean isItIn = false;
+        StringBuilder listaConsultaReservas = new StringBuilder();
+        listaConsultaReservas.append("Passageiros do voo: ").append(teste.nro).append("\n");
+        for (int fila = 0; fila < teste.aviao.lugares.length ; fila++) {
+            for (int cadeira = 0; cadeira < teste.aviao.lugares[fila].length ; cadeira++) {
+                if (teste.aviao.lugares[cadeira][fila] != null) {
+                    listaConsultaReservas.append(" Fila").append(fila + 1)
+                            .append(", Cadeira ").append(cadeira + 1)
+                            .append(": ")
+                            .append("Nome: ")
+                            .append(teste.aviao.lugares[cadeira][fila].nome)
+                            .append(" (CPF: ")
+                            .append(teste.aviao.lugares[cadeira][fila].cpf)
+                            .append(")\n");
+                    isItIn = true;
+                }
+            }
+        }
 
+        if (!isItIn){
+            listaConsultaReservas.append("Não há passageiros");
+        }
+
+        JOptionPane.showMessageDialog(null, listaConsultaReservas);
 
     }
+
     public static boolean VerificaLugar(Voo voo, int fila, int cadeira) {
         try {
-            return voo.aviao.lugares[fila-1][cadeira-1] != null;
+            return voo.aviao.lugares[fila-1][cadeira-1] == null;
         } catch (ArrayIndexOutOfBoundsException e) {
             return true; // Considera como ocupado se for inválido
         }
